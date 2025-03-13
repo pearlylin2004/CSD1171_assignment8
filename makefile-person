@@ -1,0 +1,185 @@
+.PHONY: all prep release debug clean rebuild
+
+# Name of executable file
+EXEC = sllist-person.out
+
+# Source files
+SOURCES = sllist-driver-person.cpp
+
+# Directories
+# directory for my [correct] output files
+MY_OUTPUT_DIR = ./output/person
+# directory for your executable and output files
+YOUR_RELEASE_DIR = ./release-person
+YOUR_DEBUG_DIR = ./debug-person
+
+# Your release and debug executables will located in the appropriate directories
+YOUR_RELEASE_EXEC = $(YOUR_RELEASE_DIR)/$(EXEC)
+YOUR_DEBUG_EXEC = $(YOUR_DEBUG_DIR)/$(EXEC)
+
+# Object files
+RELEASE_OBJS = $(patsubst %.cpp,$(YOUR_RELEASE_DIR)/%.o,$(SOURCES))
+DEBUG_OBJS = $(patsubst %.cpp,$(YOUR_DEBUG_DIR)/%.o,$(SOURCES))
+
+# Dependency files
+RELEASE_DEPS = $(RELEASE_OBJS:.o=.d)
+DEBUG_DEPS = $(DEBUG_OBJS:.o=.d)
+
+# Compiler and flags
+CXX = g++
+CXXFLAGS = -std=c++17 -pedantic-errors -Wall -Wextra -Werror
+DEPFLAGS = -MMD -MP
+
+# Targets
+all: prep release debug
+
+prep:
+	mkdir -p $(YOUR_RELEASE_DIR) $(YOUR_DEBUG_DIR)
+
+release: $(RELEASE_OBJS)
+	$(CXX) $(RELEASE_OBJS) -o $(YOUR_RELEASE_EXEC)
+
+debug: $(DEBUG_OBJS)
+	$(CXX) -g $(DEBUG_OBJS) -o $(YOUR_DEBUG_EXEC)
+
+$(YOUR_RELEASE_DIR)/%.o: %.cpp
+	$(CXX) $(CXXFLAGS) $(DEPFLAGS) -O2 -c $< -o $@
+
+$(YOUR_DEBUG_DIR)/%.o: %.cpp
+	$(CXX) $(CXXFLAGS) $(DEPFLAGS) -g -c $< -o $@
+
+-include $(RELEASE_DEPS)
+-include $(DEBUG_DEPS)
+
+clean:
+	rm -rf $(YOUR_RELEASE_DIR) $(YOUR_DEBUG_DIR)
+
+rebuild:
+	$(MAKE) clean
+	$(MAKE)
+
+.PHONY : test-all test1 test2 test3 test4 test5 test6 test7 test8 test9 test10 test11 test12 test13 test14
+test-all : test1 test2 test3 test4 test5 test6 test7 test8 test9 test10 test11 test12 test13 test14
+
+DIFFFLAGS = -y --strip-trailing-cr --suppress-common-lines
+YOUR_RELEASE_OUTPUT_NAME = $(YOUR_RELEASE_DIR)/your-
+#MY_OUTPUT_NAME   = $(MY_OUTPUT_DIR)/output-person-
+
+test1 : release
+	$(YOUR_RELEASE_EXEC) 1 > $(YOUR_RELEASE_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_RELEASE_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/$@.txt
+
+test2 : release
+	$(YOUR_RELEASE_EXEC) 2 > $(YOUR_RELEASE_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_RELEASE_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/$@.txt
+
+test3 : release
+	$(YOUR_RELEASE_EXEC) 3 > $(YOUR_RELEASE_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_RELEASE_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/$@.txt
+
+test4 : release
+	$(YOUR_RELEASE_EXEC) 4 > $(YOUR_RELEASE_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_RELEASE_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/$@.txt
+
+test5 : release
+	$(YOUR_RELEASE_EXEC) 5 > $(YOUR_RELEASE_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_RELEASE_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/$@.txt
+
+test6 : release
+	$(YOUR_RELEASE_EXEC) 6 > $(YOUR_RELEASE_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_RELEASE_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/$@.txt
+
+test7 : release
+	$(YOUR_RELEASE_EXEC) 7 > $(YOUR_RELEASE_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_RELEASE_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/$@.txt
+
+test8 : release
+	$(YOUR_RELEASE_EXEC) 8 > $(YOUR_RELEASE_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_RELEASE_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/$@.txt
+
+test9 : release
+	$(YOUR_RELEASE_EXEC) 9 > $(YOUR_RELEASE_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_RELEASE_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/$@.txt
+
+test10 : release
+	$(YOUR_RELEASE_EXEC) 10 > $(YOUR_RELEASE_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_RELEASE_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/$@.txt
+
+test11 : release
+	$(YOUR_RELEASE_EXEC) 11 > $(YOUR_RELEASE_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_RELEASE_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/$@.txt
+
+test12 : release
+	$(YOUR_RELEASE_EXEC) 12 > $(YOUR_RELEASE_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_RELEASE_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/$@.txt
+
+test13 : release
+	$(YOUR_RELEASE_EXEC) 13 > $(YOUR_RELEASE_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_RELEASE_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/$@.txt
+
+test14 : release
+	$(YOUR_RELEASE_EXEC) 14 > $(YOUR_RELEASE_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_RELEASE_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/$@.txt
+
+.PHONY : debug-test-all debug-test1 debug-test2 debug-test3 debug-test4 debug-test5 debug-test6 debug-test7 debug-test8 debug-test9 debug-test10 debug-test11 debug-test12 debug-test13 debug-test14
+debug-test-all : debug-test1 debug-test2 debug-test3 debug-test4 debug-test5 debug-test6 debug-test7 debug-test8 debug-test9 debug-test10 debug-test11 debug-test12 debug-test13 debug-test14
+
+VALFLAGS = --tool=memcheck --track-origins=yes
+YOUR_DEBUG_OUTPUT_NAME = $(YOUR_DEBUG_DIR)/your-
+#MY_OUTPUT_NAME   = $(MY_OUTPUT_DIR)/output-person-
+
+debug-test1 : debug
+	valgrind $(VALFLAGS) $(YOUR_DEBUG_EXEC) 1 > $(YOUR_DEBUG_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_DEBUG_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/test1.txt
+
+debug-test2 : debug
+	valgrind $(VALFLAGS) $(YOUR_DEBUG_EXEC) 2 > $(YOUR_DEBUG_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_DEBUG_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/test2.txt
+
+debug-test3 : debug
+	valgrind $(VALFLAGS) $(YOUR_DEBUG_EXEC) 3 > $(YOUR_DEBUG_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_DEBUG_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/test3.txt
+
+debug-test4 : debug
+	valgrind $(VALFLAGS) $(YOUR_DEBUG_EXEC) 4 > $(YOUR_DEBUG_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_DEBUG_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/test4.txt
+
+debug-test5 : debug
+	valgrind $(VALFLAGS) $(YOUR_DEBUG_EXEC) 5 > $(YOUR_DEBUG_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_DEBUG_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/test5.txt
+
+debug-test6 : debug
+	valgrind $(VALFLAGS) $(YOUR_DEBUG_EXEC) 6 > $(YOUR_DEBUG_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_DEBUG_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/test6.txt
+
+debug-test7 : debug
+	valgrind $(VALFLAGS) $(YOUR_DEBUG_EXEC) 7 > $(YOUR_DEBUG_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_DEBUG_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/test7.txt
+
+debug-test8 : debug
+	valgrind $(VALFLAGS) $(YOUR_DEBUG_EXEC) 8 > $(YOUR_DEBUG_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_DEBUG_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/test8.txt
+
+debug-test9 : debug
+	valgrind $(VALFLAGS) $(YOUR_DEBUG_EXEC) 9 > $(YOUR_DEBUG_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_DEBUG_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/test9.txt
+
+debug-test10 : debug
+	valgrind $(VALFLAGS) $(YOUR_DEBUG_EXEC) 10 > $(YOUR_DEBUG_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_DEBUG_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/test10.txt
+
+debug-test11 : debug
+	valgrind $(VALFLAGS) $(YOUR_DEBUG_EXEC) 11 > $(YOUR_DEBUG_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_DEBUG_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/test11.txt
+
+debug-test12 : debug
+	valgrind $(VALFLAGS) $(YOUR_DEBUG_EXEC) 12 > $(YOUR_DEBUG_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_DEBUG_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/test12.txt
+
+debug-test13 : debug
+	valgrind $(VALFLAGS) $(YOUR_DEBUG_EXEC) 13 > $(YOUR_DEBUG_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_DEBUG_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/test13.txt
+
+debug-test14 : debug
+	valgrind $(VALFLAGS) $(YOUR_DEBUG_EXEC) 14 > $(YOUR_DEBUG_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_DEBUG_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/test14.txt

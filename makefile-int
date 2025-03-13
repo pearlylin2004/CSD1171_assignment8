@@ -1,0 +1,112 @@
+.PHONY: all prep release debug clean rebuild
+
+# Name of executable file
+EXEC = sllist-int.out
+
+# Source files
+SOURCES = sllist-driver-int.cpp
+
+# Directories
+# directory for my [correct] output files
+MY_OUTPUT_DIR = ./output/int
+# directory for your executable and output files
+YOUR_RELEASE_DIR = ./release-int
+YOUR_DEBUG_DIR = ./debug-int
+
+# Your release and debug executables will located in the appropriate directories
+YOUR_RELEASE_EXEC = $(YOUR_RELEASE_DIR)/$(EXEC)
+YOUR_DEBUG_EXEC = $(YOUR_DEBUG_DIR)/$(EXEC)
+
+# Object files
+RELEASE_OBJS = $(patsubst %.cpp,$(YOUR_RELEASE_DIR)/%.o,$(SOURCES))
+DEBUG_OBJS = $(patsubst %.cpp,$(YOUR_DEBUG_DIR)/%.o,$(SOURCES))
+
+# Dependency files
+RELEASE_DEPS = $(RELEASE_OBJS:.o=.d)
+DEBUG_DEPS = $(DEBUG_OBJS:.o=.d)
+
+# Compiler and flags
+CXX = g++
+CXXFLAGS = -std=c++17 -pedantic-errors -Wall -Wextra -Werror
+DEPFLAGS = -MMD -MP
+
+# Targets
+all: prep release debug
+
+prep:
+	mkdir -p $(YOUR_RELEASE_DIR) $(YOUR_DEBUG_DIR)
+
+release: $(RELEASE_OBJS)
+	$(CXX) $(RELEASE_OBJS) -o $(YOUR_RELEASE_EXEC)
+
+debug: $(DEBUG_OBJS)
+	$(CXX) -g $(DEBUG_OBJS) -o $(YOUR_DEBUG_EXEC)
+
+$(YOUR_RELEASE_DIR)/%.o: %.cpp
+	$(CXX) $(CXXFLAGS) $(DEPFLAGS) -O2 -c $< -o $@
+
+$(YOUR_DEBUG_DIR)/%.o: %.cpp
+	$(CXX) $(CXXFLAGS) $(DEPFLAGS) -g -c $< -o $@
+
+-include $(RELEASE_DEPS)
+-include $(DEBUG_DEPS)
+
+clean:
+	rm -rf $(YOUR_RELEASE_DIR) $(YOUR_DEBUG_DIR)
+
+rebuild:
+	$(MAKE) clean
+	$(MAKE)
+
+.PHONY : test-all test1 test2 test3 test4 test5
+test-all : test1 test2 test3 test4 test5
+
+DIFFFLAGS = -y --strip-trailing-cr --suppress-common-lines
+YOUR_RELEASE_OUTPUT_NAME = $(YOUR_RELEASE_DIR)/your-
+
+test1 : release
+	$(YOUR_RELEASE_EXEC) 1 > $(YOUR_RELEASE_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_RELEASE_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/$@.txt
+
+test2 : release
+	$(YOUR_RELEASE_EXEC) 2 > $(YOUR_RELEASE_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_RELEASE_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/$@.txt
+
+test3 : release
+	$(YOUR_RELEASE_EXEC) 3 > $(YOUR_RELEASE_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_RELEASE_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/$@.txt
+
+test4 : release
+	$(YOUR_RELEASE_EXEC) 4 > $(YOUR_RELEASE_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_RELEASE_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/$@.txt
+
+test5 : release
+	$(YOUR_RELEASE_EXEC) 5 > $(YOUR_RELEASE_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_RELEASE_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/$@.txt
+
+.PHONY : debug-test-all debug-test1 debug-test2 debug-test3 debug-test4 debug-test5
+debug-test-all : debug-test1 debug-test2 debug-test3 debug-test4 debug-test5
+
+VALFLAGS = --tool=memcheck --track-origins=yes
+YOUR_DEBUG_OUTPUT_NAME = $(YOUR_DEBUG_DIR)/your-
+#MY_OUTPUT_NAME   = $(MY_OUTPUT_DIR)/output-int-
+
+debug-test1 : debug
+	valgrind $(VALFLAGS) $(YOUR_DEBUG_EXEC) 1 > $(YOUR_DEBUG_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_DEBUG_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/test1.txt
+
+debug-test2 : debug
+	valgrind $(VALFLAGS) $(YOUR_DEBUG_EXEC) 2 > $(YOUR_DEBUG_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_DEBUG_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/test2.txt
+
+debug-test3 : debug
+	valgrind $(VALFLAGS) $(YOUR_DEBUG_EXEC) 3 > $(YOUR_DEBUG_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_DEBUG_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/test3.txt
+
+debug-test4 : debug
+	valgrind $(VALFLAGS) $(YOUR_DEBUG_EXEC) 4 > $(YOUR_DEBUG_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_DEBUG_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/test4.txt
+
+debug-test5 : debug
+	valgrind $(VALFLAGS) $(YOUR_DEBUG_EXEC) 5 > $(YOUR_DEBUG_OUTPUT_NAME)$@.txt
+	diff $(DIFFFLAGS) $(YOUR_DEBUG_OUTPUT_NAME)$@.txt $(MY_OUTPUT_DIR)/test5.txt
